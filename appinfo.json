@@ -1,0 +1,19 @@
+{
+	"uuid": "4577d6dc-f795-4d3d-b700-3137ddcff4cc",
+	"shortName": "Breaking News",
+	"longName": "Breaking News",
+	"companyName": "Neal",
+	"versionCode": 1,
+	"versionLabel": "1.0.0",
+	"watchapp": {
+		"watchface": false
+	},
+	"appKeys": {
+		"index": 0,
+		"title": 1,
+		"error": 2
+	},
+	"resources": {
+		"media": []
+	}
+}
