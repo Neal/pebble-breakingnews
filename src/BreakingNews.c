@@ -32,6 +32,11 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 		BNStory story;
 		story.index = index_tuple->value->int16;
 		strncpy(story.title, title_tuple->value->cstring, sizeof(story.title));
+		TextLayer *text_layer = text_layer_create((GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } });
+		text_layer_set_text(text_layer, story.title);
+		text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+		story.size = text_layer_get_content_size(text_layer);
+		text_layer_destroy(text_layer);
 		stories[story.index] = story;
 		num_stories++;
 		menu_layer_reload_data_and_mark_dirty(menu_layer);
@@ -78,6 +83,9 @@ static int16_t menu_get_header_height_callback(struct MenuLayer *menu_layer, uin
 }
 
 static int16_t menu_get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
+	if (strlen(error) != 0) {
+		return MENU_CELL_BASIC_CELL_HEIGHT;
+	}
 	if (num_stories != 0) {
 		return stories[cell_index->row].size.h + 8;
 	}
@@ -90,15 +98,14 @@ static void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, ui
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *callback_context) {
 	if (strlen(error) != 0) {
-		menu_cell_title_draw(ctx, cell_layer, "Error!");
+		menu_cell_basic_draw(ctx, cell_layer, "Error", error, NULL);
 	} else if (num_stories == 0) {
 		menu_cell_title_draw(ctx, cell_layer, "Loading...");
 	} else {
 		char label[160] = "";
 		strncpy(label, stories[cell_index->row].title, sizeof(label));
-		stories[cell_index->row].size = graphics_text_layout_get_max_used_size(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 4, 0 }, .size = { PEBBLE_WIDTH - 8, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
 		graphics_context_set_text_color(ctx, GColorBlack);
-		graphics_draw_text(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 4, 0 }, .size = { PEBBLE_WIDTH - 8, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
+		graphics_draw_text(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
 	}
 }
 
@@ -137,8 +144,6 @@ static void init(void) {
 	menu_layer_add_to_window(menu_layer, window);
 
 	window_stack_push(window, true /* animated */);
-
-	refresh_list();
 }
 
 static void deinit(void) {

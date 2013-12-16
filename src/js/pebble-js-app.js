@@ -70,7 +70,9 @@ function breakingnews() {
 	xhr.send(null);
 }
 
-Pebble.addEventListener('ready', function(e) {});
+Pebble.addEventListener('ready', function(e) {
+	breakingnews();
+});
 
 Pebble.addEventListener('appmessage', function(e) {
 	console.log('AppMessage received from Pebble: ' + JSON.stringify(e.payload));
