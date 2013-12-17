@@ -61,15 +61,6 @@ static void out_failed_handler(DictionaryIterator *failed, AppMessageResult reas
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to send AppMessage to Pebble");
 }
 
-static void refresh_list() {
-	memset(stories, 0x0, sizeof(stories));
-	num_stories = 0;
-	error[0] = '\0';
-	menu_layer_set_selected_index(menu_layer, (MenuIndex) { .row = 0, .section = 0 }, MenuRowAlignBottom, false);
-	menu_layer_reload_data_and_mark_dirty(menu_layer);
-	app_message_outbox_send();
-}
-
 static uint16_t menu_get_num_sections_callback(struct MenuLayer *menu_layer, void *callback_context) {
 	return 1;
 }
@@ -87,7 +78,7 @@ static int16_t menu_get_cell_height_callback(struct MenuLayer *menu_layer, MenuI
 		return MENU_CELL_BASIC_CELL_HEIGHT;
 	}
 	if (num_stories != 0) {
-		return stories[cell_index->row].size.h + 8;
+		return stories[cell_index->row].size.h + 4;
 	}
 	return 36;
 }
@@ -113,7 +104,12 @@ static void menu_select_callback(struct MenuLayer *menu_layer, MenuIndex *cell_i
 }
 
 static void menu_select_long_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-	refresh_list();
+	memset(stories, 0x0, sizeof(stories));
+	num_stories = 0;
+	error[0] = '\0';
+	menu_layer_set_selected_index(menu_layer, (MenuIndex) { .row = 0, .section = 0 }, MenuRowAlignBottom, false);
+	menu_layer_reload_data_and_mark_dirty(menu_layer);
+	app_message_outbox_send();
 }
 
 static void appmessage_init(void) {

@@ -35,14 +35,14 @@ function sendAppMessage() {
 
 function breakingnews() {
 	var xhr = new XMLHttpRequest();
-	xhr.open('GET', 'http://api.breakingnews.com/api/v1/popular/1/', true);
+	xhr.open('GET', 'http://api.breakingnews.com/api/v1/item/', true);
 	xhr.timeout = httpTimeout;
 	xhr.onload = function(e) {
 		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
 				if (xhr.responseText) {
 					res = JSON.parse(xhr.responseText);
-					res.items.forEach(function (element, index, array) {
+					res.objects.forEach(function (element, index, array) {
 						title = element.content.substring(0,160);
 						appMessageQueue.push({'message': {'index': index, 'title': title}});
 					});
@@ -76,6 +76,7 @@ Pebble.addEventListener('ready', function(e) {
 
 Pebble.addEventListener('appmessage', function(e) {
 	console.log('AppMessage received from Pebble: ' + JSON.stringify(e.payload));
+	appMessageQueue = [];
 	breakingnews();
 });
 
