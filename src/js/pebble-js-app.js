@@ -41,7 +41,7 @@ function fetch() {
 				if (xhr.responseText) {
 					res = JSON.parse(xhr.responseText);
 					res.objects.forEach(function (element, index, array) {
-						content = element.content.substring(0,160);
+						content = element.content.substring(0,159);
 						appMessageQueue.push({'message': {'index': index, 'content': content}});
 					});
 				} else {
