@@ -1,7 +1,6 @@
 var maxAppMessageTries = 3;
 var appMessageRetryTimeout = 3000;
 var appMessageTimeout = 100;
-var httpTimeout = 12000;
 var appMessageQueue = [];
 
 function sendAppMessage() {
@@ -36,7 +35,6 @@ function sendAppMessage() {
 function fetch() {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'http://api.breakingnews.com/api/v1/item/', true);
-	xhr.timeout = httpTimeout;
 	xhr.onload = function(e) {
 		if (xhr.readyState == 4) {
 			if (xhr.status == 200) {
@@ -57,11 +55,6 @@ function fetch() {
 		}
 		sendAppMessage();
 	}
-	xhr.ontimeout = function() {
-		console.log('HTTP request timed out');
-		appMessageQueue.push({'message': {'error': 'Request timed out!'}});
-		sendAppMessage();
-	};
 	xhr.onerror = function() {
 		console.log('HTTP request return error');
 		appMessageQueue.push({'message': {'error': 'Failed to connect!'}});
