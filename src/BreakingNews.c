@@ -5,13 +5,13 @@
 
 typedef struct {
 	int index;
-	char title[160];
+	char content[160];
 	GSize size;
 } BNStory;
 
 enum {
 	BN_KEY_INDEX,
-	BN_KEY_TITLE,
+	BN_KEY_CONTENT,
 	BN_KEY_ERROR,
 };
 
@@ -25,22 +25,22 @@ static MenuLayer *menu_layer;
 
 static void in_received_handler(DictionaryIterator *iter, void *context) {
 	Tuple *index_tuple = dict_find(iter, BN_KEY_INDEX);
-	Tuple *title_tuple = dict_find(iter, BN_KEY_TITLE);
+	Tuple *content_tuple = dict_find(iter, BN_KEY_CONTENT);
 	Tuple *error_tuple = dict_find(iter, BN_KEY_ERROR);
 
-	if (index_tuple && title_tuple) {
+	if (index_tuple && content_tuple) {
 		BNStory story;
 		story.index = index_tuple->value->int16;
-		strncpy(story.title, title_tuple->value->cstring, sizeof(story.title));
+		strncpy(story.content, content_tuple->value->cstring, sizeof(story.content));
 		TextLayer *text_layer = text_layer_create((GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } });
-		text_layer_set_text(text_layer, story.title);
+		text_layer_set_text(text_layer, story.content);
 		text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
 		story.size = text_layer_get_content_size(text_layer);
 		text_layer_destroy(text_layer);
 		stories[story.index] = story;
 		num_stories++;
 		menu_layer_reload_data_and_mark_dirty(menu_layer);
-		APP_LOG(APP_LOG_LEVEL_DEBUG, "received story [%d] %s", story.index, story.title);
+		APP_LOG(APP_LOG_LEVEL_DEBUG, "received story [%d] %s", story.index, story.content);
 	}
 
 	if (error_tuple) {
@@ -93,8 +93,8 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
 	} else if (num_stories == 0) {
 		menu_cell_title_draw(ctx, cell_layer, "Loading...");
 	} else {
-		char label[160] = "";
-		strncpy(label, stories[cell_index->row].title, sizeof(label));
+		char label[160];
+		strncpy(label, stories[cell_index->row].content, sizeof(label));
 		graphics_context_set_text_color(ctx, GColorBlack);
 		graphics_draw_text(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
 	}

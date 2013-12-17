@@ -33,7 +33,7 @@ function sendAppMessage() {
 	}
 }
 
-function breakingnews() {
+function fetch() {
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', 'http://api.breakingnews.com/api/v1/item/', true);
 	xhr.timeout = httpTimeout;
@@ -43,8 +43,8 @@ function breakingnews() {
 				if (xhr.responseText) {
 					res = JSON.parse(xhr.responseText);
 					res.objects.forEach(function (element, index, array) {
-						title = element.content.substring(0,160);
-						appMessageQueue.push({'message': {'index': index, 'title': title}});
+						content = element.content.substring(0,160);
+						appMessageQueue.push({'message': {'index': index, 'content': content}});
 					});
 				} else {
 					console.log('Invalid response received! ' + JSON.stringify(xhr));
@@ -71,12 +71,11 @@ function breakingnews() {
 }
 
 Pebble.addEventListener('ready', function(e) {
-	breakingnews();
+	fetch();
 });
 
 Pebble.addEventListener('appmessage', function(e) {
-	console.log('AppMessage received from Pebble: ' + JSON.stringify(e.payload));
 	appMessageQueue = [];
-	breakingnews();
+	fetch();
 });
 

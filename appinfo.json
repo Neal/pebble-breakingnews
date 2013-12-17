@@ -10,7 +10,7 @@
 	},
 	"appKeys": {
 		"index": 0,
-		"title": 1,
+		"content": 1,
 		"error": 2
 	},
 	"resources": {
