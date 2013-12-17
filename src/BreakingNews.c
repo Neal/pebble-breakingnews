@@ -78,7 +78,7 @@ static int16_t menu_get_cell_height_callback(struct MenuLayer *menu_layer, MenuI
 		return MENU_CELL_BASIC_CELL_HEIGHT;
 	}
 	if (num_stories != 0) {
-		return stories[cell_index->row].size.h + 4;
+		return stories[cell_index->row].size.h + 8;
 	}
 	return 36;
 }
