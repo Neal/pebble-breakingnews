@@ -6,7 +6,6 @@
 typedef struct {
 	int index;
 	char content[160];
-	GSize size;
 } BNStory;
 
 enum {
@@ -32,11 +31,6 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 		BNStory story;
 		story.index = index_tuple->value->int16;
 		strncpy(story.content, content_tuple->value->cstring, sizeof(story.content));
-		TextLayer *text_layer = text_layer_create((GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } });
-		text_layer_set_text(text_layer, story.content);
-		text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
-		story.size = text_layer_get_content_size(text_layer);
-		text_layer_destroy(text_layer);
 		stories[story.index] = story;
 		num_stories++;
 		menu_layer_reload_data_and_mark_dirty(menu_layer);
@@ -74,13 +68,10 @@ static int16_t menu_get_header_height_callback(struct MenuLayer *menu_layer, uin
 }
 
 static int16_t menu_get_cell_height_callback(struct MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context) {
-	if (strlen(error) != 0) {
-		return MENU_CELL_BASIC_CELL_HEIGHT;
-	}
 	if (num_stories != 0) {
-		return stories[cell_index->row].size.h + 8;
+		return graphics_text_layout_get_content_size(stories[cell_index->row].content, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft).h + 8;
 	}
-	return 36;
+	return MENU_CELL_BASIC_CELL_HEIGHT;
 }
 
 static void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *callback_context) {
@@ -91,12 +82,10 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
 	if (strlen(error) != 0) {
 		menu_cell_basic_draw(ctx, cell_layer, "Error", error, NULL);
 	} else if (num_stories == 0) {
-		menu_cell_title_draw(ctx, cell_layer, "Loading...");
+		menu_cell_basic_draw(ctx, cell_layer, "Loading...", NULL, NULL);
 	} else {
-		char label[160];
-		strncpy(label, stories[cell_index->row].content, sizeof(label));
 		graphics_context_set_text_color(ctx, GColorBlack);
-		graphics_draw_text(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
+		graphics_draw_text(ctx, stories[cell_index->row].content, fonts_get_system_font(FONT_KEY_GOTHIC_18), (GRect) { .origin = { 2, 0 }, .size = { PEBBLE_WIDTH - 4, 128 } }, GTextOverflowModeFill, GTextAlignmentLeft, NULL);
 	}
 }
 
