@@ -30,7 +30,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 	if (index_tuple && content_tuple) {
 		BNStory story;
 		story.index = index_tuple->value->int16;
-		strncpy(story.content, content_tuple->value->cstring, sizeof(story.content));
+		strncpy(story.content, content_tuple->value->cstring, sizeof(story.content) - 1);
 		stories[story.index] = story;
 		num_stories++;
 		menu_layer_reload_data_and_mark_dirty(menu_layer);
@@ -38,7 +38,7 @@ static void in_received_handler(DictionaryIterator *iter, void *context) {
 	}
 
 	if (error_tuple) {
-		strncpy(error, error_tuple->value->cstring, sizeof(error));
+		strncpy(error, error_tuple->value->cstring, sizeof(error) - 1);
 		menu_layer_reload_data_and_mark_dirty(menu_layer);
 	}
 }
